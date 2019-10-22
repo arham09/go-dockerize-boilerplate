@@ -1,0 +1,39 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+version: '3.7'
+
+services:
+  production:
+    hostname: app-production
+    restart: unless-stopped
+    build:
+      context: . 
+      dockerfile: Dockerfile
+      target: base
+    environment:
+      PORT: "2020"
+    volumes:
+      - type: bind
+        source: .
+        target: /home/app
+    working_dir: /home/app
+    ports:
+      - "2020:2020" 
+    command: bash -c "./scripts/production.sh"
+
+  development:
+    hostname: app-development
+    restart: unless-stopped
+    build:
+      context: . 
+      dockerfile: Dockerfile
+      target: dev
+    environment:
+      PORT: "2019"
+    volumes:
+      - type: bind
+        source: .
+        target: /home/app
+    working_dir: /home/app
+    ports:
+      - "2019:2019" 
+    command: bash -c "go mod download && make serve"
